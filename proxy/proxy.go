@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"time"
+  "strings"
 
 	"github.com/sirupsen/logrus"
 	"github.com/tencentyun/cos-go-sdk-v5"
@@ -15,7 +16,12 @@ import (
 var clientMap = make(map[string]*types.BucketInfo)
 
 func proxyHandler(w http.ResponseWriter, r *http.Request) {
-	info := clientMap[r.Host]
+  fmt.Println(r.URL.Path)
+  bucket, bucketPath, _ := strings.Cut(r.URL.Path[1:], "/")
+  
+	info := clientMap[bucket]
+  fmt.Println(clientMap[bucket])
+  fmt.Println(clientMap[bucket])
 	if info == nil {
 		log(r, http.StatusNotFound)
 		http.Error(w, "can not find bucket", http.StatusNotFound)
@@ -29,7 +35,7 @@ func proxyHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	client := info.COSClient
-	objectKey := r.URL.Path[1:]
+	objectKey := bucketPath
 
 	if objectKey == "" {
 		log(r, http.StatusNotFound)
@@ -98,7 +104,7 @@ func log(r *http.Request, statusCode int) {
 
 func StartProxy(infos []*types.BucketInfo, addr string) {
 	for _, info := range infos {
-		clientMap[info.Domain] = info
+		clientMap[info.BucketName] = info
 	}
 	http.HandleFunc("/", proxyHandler)
 	logrus.Info("Start server on " + addr)
