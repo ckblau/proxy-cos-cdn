@@ -49,8 +49,9 @@ func main() {
 	includeBucketsList := strings.Split(*includeBuckets, ",")
 	excludeBucketsList := strings.Split(*excludeBuckets, ",")
 	filteredInfos := make([]*types.BucketInfo, 0)
+	incListEmpty := ((len(includeBucketsList) == 1) && (includeBucketsList[0] == ""))
 	for _, info := range infos {
-		if (len(includeBucketsList) == 0 || contains(includeBucketsList, info.BucketName)) &&
+		if (incListEmpty || contains(includeBucketsList, info.BucketName)) &&
 			!contains(excludeBucketsList, info.BucketName) {
 			filteredInfos = append(filteredInfos, info)
 		}
