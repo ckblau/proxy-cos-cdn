@@ -6,7 +6,7 @@ import (
 	"io"
 	"net/http"
 	"time"
-  "strings"
+	"strings"
 
 	"github.com/sirupsen/logrus"
 	"github.com/tencentyun/cos-go-sdk-v5"
@@ -16,12 +16,10 @@ import (
 var clientMap = make(map[string]*types.BucketInfo)
 
 func proxyHandler(w http.ResponseWriter, r *http.Request) {
-  fmt.Println(r.URL.Path)
-  bucket, bucketPath, _ := strings.Cut(r.URL.Path[1:], "/")
+	fmt.Println(r.URL.Path)
+	bucket, bucketPath, _ := strings.Cut(r.URL.Path[1:], "/")
   
 	info := clientMap[bucket]
-  fmt.Println(clientMap[bucket])
-  fmt.Println(clientMap[bucket])
 	if info == nil {
 		log(r, http.StatusNotFound)
 		http.Error(w, "can not find bucket", http.StatusNotFound)
